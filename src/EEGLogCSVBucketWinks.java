@@ -12,11 +12,11 @@ import java.util.StringJoiner;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 /** This class will be used for logging EEG sensor values into a text file for an R program to read **/
-public class EEGLogCSV extends Frame implements KeyListener {
+public class EEGLogCSVBucketWinks extends Frame implements KeyListener {
 
 	private static final long serialVersionUID = 1L;
 	public static boolean[] EEGEvents = new boolean[16];
-	public EEGLogCSV() {
+	public EEGLogCSVBucketWinks() {
 		addKeyListener(this); 
 		setSize(320, 160);
 		setVisible(true);
@@ -36,6 +36,8 @@ public class EEGLogCSV extends Frame implements KeyListener {
 		boolean readytocollect 		= false;
 		userID 			= new IntByReference(0);
 		nSamplesTaken	= new IntByReference(0);
+		int expr = 0;
+		int time = 0;
 		
 		new EEGLogCSV();
 
@@ -109,7 +111,24 @@ public class EEGLogCSV extends Frame implements KeyListener {
 								}
 								//add 0 or 1 for expression or no expression based on key presses
 								//joiner will make new columns for each EEG event
-								for (int i = 0; i < 12; i++) {
+								/*for (int i = 0; i < 12; i++) {
+									if (EEGEvents[i] == true) {
+										joiner.add("1");
+									}
+									else {
+										joiner.add("0");
+									}
+								}*/
+								if (time++ == 128) {
+									if (expr++ == 3) {
+										expr = 1;
+									}
+									time = 0;
+								}
+								for (int i = 1; i < 3; i++) { // only winks, no blinks
+									EEGEvents[i] = (i == expr);
+								}
+								for (int i = 1; i < 3; i++) { // same
 									if (EEGEvents[i] == true) {
 										joiner.add("1");
 									}
